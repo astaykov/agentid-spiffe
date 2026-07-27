@@ -1,0 +1,18 @@
+# SPIRE, FastAPI, OIDC discovery, and the SPA share one container.
+services:
+  backend:
+    build: ./src
+    ports:
+      - "8000:8000"   # API, /spiffe-oidc/*, and /spa/
+      - "8443:8443"   # oidc-discovery-provider (local visibility only)
+    env_file:
+      - ./.env
+    environment:
+      OIDC_ISSUER_URL: http://localhost:8000/spiffe-oidc
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/readyz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+

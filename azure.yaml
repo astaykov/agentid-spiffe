@@ -1,0 +1,33 @@
+# Azure Developer CLI (azd) configuration.
+#
+# One image contains SPIRE, FastAPI, OIDC discovery, and the SPA.
+#
+# Deploy with: azd up (images build remotely with Azure Container Registry)
+name: poc-spiffe-entra
+metadata:
+  template: poc-spiffe-entra@0.1.0
+hooks:
+  preprovision:
+    shell: pwsh
+    run: ./scripts/configure-pre-deployment.ps1
+    interactive: true
+    continueOnError: false
+  postdeploy:
+    shell: pwsh
+    run: ./scripts/configure-postdeploy.ps1
+    interactive: true
+    continueOnError: false
+  postdown:
+    shell: pwsh
+    run: ./scripts/configure-postdown.ps1
+    interactive: true
+    continueOnError: false
+services:
+  backend:
+    project: ./src
+    host: containerapp
+    language: docker
+    docker:
+      path: ./Dockerfile
+      context: .
+      remoteBuild: true

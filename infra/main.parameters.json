@@ -1,0 +1,42 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "environmentName": {
+      "value": "${AZURE_ENV_NAME}"
+    },
+    "location": {
+      "value": "${AZURE_LOCATION}"
+    },
+    "entraTenantId": {
+      "value": "${ENTRA_TENANT_ID}"
+    },
+    "blueprintClientId": {
+      "value": "${BLUEPRINT_CLIENT_ID}"
+    },
+    "agentIdentityClientId": {
+      "value": "${AGENT_IDENTITY_CLIENT_ID}"
+    },
+    "downstreamScope": {
+      "value": "${DOWNSTREAM_SCOPE}"
+    },
+    "expectedDelegatedScope": {
+      "value": "${EXPECTED_DELEGATED_SCOPE}"
+    },
+    "mcpServerUrl": {
+      "value": "${MCP_SERVER_URL}"
+    },
+    "agentMode": {
+      "value": "${AGENT_MODE}"
+    },
+    "spiffeJwtAudience": {
+      "value": "${SPIFFE_JWT_AUDIENCE}"
+    },
+    "spaClientId": {
+      "value": "${SPA_CLIENT_ID}"
+    },
+    "aiAgentSystemPrompt": {
+      "value": "${AI_AGENT_SYSTEM_PROMPT}"
+    }
+  }
+}
