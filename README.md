@@ -64,7 +64,7 @@ generates `/spa/env-config.js` dynamically from runtime settings.
 
 ## Configuration
 
-Copy the single committed example:
+Copy the example env file:
 
 ```powershell
 Copy-Item .env.example .env
@@ -85,6 +85,8 @@ The root `.env` is the source of truth for both local Docker and Azure:
 - `AZURE_OPENAI_DEPLOYMENT`
 - `AI_AGENT_SYSTEM_PROMPT`
 
+> **Important!** Use the tenant guid for the `ENTRA_TENANT_ID`
+
 The backend derives:
 
 - inbound token audience from `BLUEPRINT_CLIENT_ID`
@@ -103,7 +105,7 @@ reuses them and skips object creation. `infra/main.parameters.json` maps the
 deployment values to required Bicep parameters. Azure computes and overrides
 the public OIDC issuer with the generated ACA origin plus `/spiffe-oidc`.
 
-## Entra Bootstrap
+## Entra ID Bootstrap
 
 The normal Azure workflow does not require running the bootstrap separately.
 `azd up` invokes it through `preprovision`. Run it directly only when creating
@@ -118,6 +120,8 @@ The bootstrap creates `.env` from `.env.example` when needed and updates
 `SPA_CLIENT_ID`, and `EXPECTED_DELEGATED_SCOPE`. Existing unrelated values are
 preserved. Complete any remaining placeholders before deployment. The script
 does not create a FIC because the public issuer is an Azure deployment output.
+
+> **Important**: You must be `Global Adminsitrator` for the Entra bootstrap script to succeed. The reason is that it creates an agent identity blueprint, agent identity blueprint principal, agent identity, an app registration for the SPA app, grants `admin consent` for the SPA app to the agent blueprint and for the agent identity to the Microsoft MCP Server for Enterprise. And it also expects that the [Microsoft MCP Server for Enterprise](https://learn.microsoft.com/en-us/graph/mcp-server/overview) is already provisioned into the tenant.
 
 ## AI Agent
 
