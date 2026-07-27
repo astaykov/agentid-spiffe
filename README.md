@@ -14,33 +14,36 @@ provider, FastAPI, and a browser SPA in one Azure Container App image.
 ```mermaid
 flowchart LR
   user(["User browser"])
-  azd["AZD lifecycle hooks"]
-  entra["Microsoft Entra ID<br/>SPA registration<br/>Agent Blueprint + Principal<br/>Agent Identity"]
+
   model[["Microsoft Foundry AI Services<br/>gpt-5.4-nano Responses API"]]
   mcp["Microsoft MCP Server<br/>for enterprise"]
 
   subgraph azure["Azure Container App: spiffe"]
     spa[/"SPA<br/>/spa/"/]
     api{{"FastAPI<br/>/invoke"}}
-    spire["SPIRE Server + Agent"]
+    spire[["SPIRE Server + Agent"]]
     oidc(["OIDC discovery + JWKS<br/>/spiffe-oidc"])
-
-    spa -->|"same-origin request"| api
-    api -->|"fetch JWT-SVID"| spire
-    spire --> oidc
   end
 
+  entra["Microsoft Entra ID<br/>SPA registration<br/>Agent Blueprint + Principal<br/>Agent Identity"]
+
+  %% 1. Use an invisible link to force horizontal side-by-side placement
+  model ~~~ mcp
+
+  %% 2. Define top-level connections first to push them UP
+  api <-->|"prompt & response"| model
+  api <-->|"call using Entra Agent ID authentication"| mcp  
+
+  %% 3. Define middle flow
   user --> spa
+  spa -->|"same-origin request"| api
+  api -->|"fetch JWT-SVID"| spire
+  spire --> oidc
+
+  %% 4. Define bottom-level connections last to push them DOWN
   spa -->|"sign-in and agent.invoke token"| entra
   api -->|"JWT-SVID, FIC/FMI, and OBO"| entra
   entra -->|"validate issuer metadata and keys"| oidc
-  api <-->|"prompt & response "| model
-  api <-->|"call using Entra Agent ID authentication"| mcp
-  
-  azd -. "preprovision: create identities" .-> entra
-  azd -. "deploy / down" .-> azure
-  azd -. "postdeploy: FIC, redirect, grants" .-> entra
-  azd -. "postdown: remove identities" .-> entra
 ```
 
 ## Routes
